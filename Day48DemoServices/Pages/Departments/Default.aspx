@@ -14,7 +14,7 @@
 
     <a href="Create.aspx">Add new department</a>
     <br />
-    <br />
+    
 
     <form id="form1" runat="server">
         <div>

@@ -7,12 +7,44 @@ using System.Text;
 using System.Threading.Tasks;
 using UserServices.Services.Models;
 using System.Configuration;
+using UserServices.Services.Utilities;
 
 namespace UserServices.Services
 {
     public class DepartmentService
     {
         private static readonly string ConnectionString = ConfigurationManager.ConnectionStrings["UserManagement"].ConnectionString;
+
+        public List<DropDownInfo> GetAllForDropDown()
+        {
+            var dropDownInfos = new List<DropDownInfo>();
+
+            using (var connection = new SqlConnection(WebConfigHelper.ConnectionString))
+            {
+                const string cmdText = "Departments_GetAllForDropDown";
+
+                using (var command = new SqlCommand(cmdText, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var dropDownInfo = new DropDownInfo
+                            {
+                                Value = (int)reader["ID"],
+                                Text = reader["Name"].GetDataFromDb<string>()
+                            };
+
+                            dropDownInfos.Add(dropDownInfo);
+                        }
+                    }
+                }
+            }
+            return dropDownInfos;
+        }
 
         public List<Department> GetAll()
         {
